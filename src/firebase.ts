@@ -18,7 +18,8 @@ const messaging = getMessaging(firebaseApp);
 export const requestPermission = (setTokenFound: (val: string)=> void) => {
     Notification.requestPermission().then((permission) => {
         if (permission === 'granted') {
-            getToken(messaging, {vapidKey: 'BMGGzi3k92QB1T_obtxPU2W3bXXE5IyzrP28puA6GCe6ca1uNcAicuCVfBgf62O_Q27F8Zfa2KYPez2jhsk7kSk'})
+            navigator.serviceWorker.register('pwa-react-page/firebase-messaging-sw.js').then((registration)=>{
+            getToken(messaging, {serviceWorkerRegistration:registration, vapidKey: 'BMGGzi3k92QB1T_obtxPU2W3bXXE5IyzrP28puA6GCe6ca1uNcAicuCVfBgf62O_Q27F8Zfa2KYPez2jhsk7kSk'})
                 .then((currentToken) => {
                     if (currentToken) {
                         console.log('current token for client: ', currentToken);
@@ -32,7 +33,7 @@ export const requestPermission = (setTokenFound: (val: string)=> void) => {
                 }).catch((err) => {
                 console.log('An error occurred while retrieving token. ', err);
                 // catch error while creating client token
-            });
+            });})
         } else {
             console.log('Unable to get permission to notify.');
         }
