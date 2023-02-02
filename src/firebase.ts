@@ -11,35 +11,25 @@ const firebaseConfig = {
     measurementId: "G-E0EBHZDGH5"
 };
 
-initializeApp(firebaseConfig)
 const firebaseApp = initializeApp(firebaseConfig);
 const messaging = getMessaging(firebaseApp);
 
-export const requestPermission = (setTokenFound: (val: string)=> void) => {
-    Notification.requestPermission().then((permission) => {
-        if (permission === 'granted') {
-            navigator.serviceWorker.register('pwa-react-page/firebase-messaging-sw.js').then((registration)=>{
-            getToken(messaging, {serviceWorkerRegistration:registration, vapidKey: 'BMGGzi3k92QB1T_obtxPU2W3bXXE5IyzrP28puA6GCe6ca1uNcAicuCVfBgf62O_Q27F8Zfa2KYPez2jhsk7kSk'})
-                .then((currentToken) => {
-                    if (currentToken) {
-                        console.log('current token for client: ', currentToken);
-                        setTokenFound(currentToken);
-                        // Track the token -> client mapping, by sending to backend server
-                        // show on the UI that permission is secured
-                    } else {
-                        console.log('No registration token available. Request permission to generate one.');
-                        // shows on the UI that permission is required
-                    }
-                }).catch((err) => {
-                console.log('An error occurred while retrieving token. ', err);
-                // catch error while creating client token
-            });})
+export const fetchToken = (setTokenFound: (val: string)=> void) => {
+    return getToken(messaging, {vapidKey: 'BHGPr3pJQSflJAJtTIVXbmcEXlPV_HP29TZQRcqrGCN10gKIa-ojIJmtvM9kQGcsNKsWIA6ezKFG8Bd6LTjaVc0'}).then((currentToken) => {
+        if (currentToken) {
+            console.log('current token for client: ', currentToken);
+            setTokenFound(currentToken);
+            // Track the token -> client mapping, by sending to backend server
+            // show on the UI that permission is secured
         } else {
-            console.log('Unable to get permission to notify.');
+            console.log('No registration token available. Request permission to generate one.');
+            // shows on the UI that permission is required
         }
+    }).catch((err) => {
+        console.log('An error occurred while retrieving token. ', err);
+        // catch error while creating client token
     });
 }
-
 
 export const onMessageListener = () =>
     new Promise((resolve) => {
